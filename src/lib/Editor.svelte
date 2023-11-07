@@ -19,7 +19,7 @@
 		if (editor) {
 			view = new EditorView({
 				doc: value,
-				extensions: [basicSetup, updateListener],
+				extensions: [basicSetup, updateListener, EditorView.lineWrapping],
 				parent: editor
 			});
 		}
@@ -34,4 +34,31 @@
 	}
 </script>
 
-<div bind:this={editor} />
+<div class="basis-1/2" bind:this={editor} />
+
+<style lang="postcss">
+	:global(.cm-editor .cm-activeLine),
+	:global(.cm-editor .cm-gutters),
+	:global(.cm-editor .cm-activeLineGutter) {
+		background-color: #ffffff44;
+		border: none;
+	}
+
+	:global(.cm-editor.cm-focused) {
+		outline: none;
+		box-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width))
+			theme(colors.teal.300);
+		border: 1px solid theme(colors.emerald.300);
+	}
+
+	:global(.cm-scroller) {
+		overflow: auto;
+	}
+
+	:global(.cm-editor) {
+		height: 300px;
+		border-radius: 0.375rem;
+		border: 1px solid theme(colors.gray.200);
+		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	}
+</style>
