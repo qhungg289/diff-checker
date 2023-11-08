@@ -1,7 +1,5 @@
 <script>
 	import '../app.css';
-
-	export const ssr = false;
 </script>
 
 <header class="px-8 py-4">
