@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { EditorState } from '@codemirror/state';
 	import { EditorView, basicSetup } from 'codemirror';
 	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let value: string;
+	export let readOnly: boolean = false;
 
 	let editor: HTMLDivElement;
 	let view: EditorView;
@@ -19,7 +21,12 @@
 		if (editor) {
 			view = new EditorView({
 				doc: value,
-				extensions: [basicSetup, updateListener, EditorView.lineWrapping],
+				extensions: [
+					basicSetup,
+					updateListener,
+					EditorView.lineWrapping,
+					EditorState.readOnly.of(readOnly)
+				],
 				parent: editor
 			});
 		}
