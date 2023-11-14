@@ -41,7 +41,7 @@
 </script>
 
 <div
-	class="basis-1/2"
+	class="basis-1/2 bg-white"
 	style="--editor-height: {autoHeight ? 'fit-content' : '300px'};"
 	bind:this={editor}
 />

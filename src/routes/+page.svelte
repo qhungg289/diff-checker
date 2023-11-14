@@ -10,6 +10,8 @@
 	let changedTextResult = '';
 	let diffResult: Diff[] = [];
 
+	let isLoading = false;
+
 	$: console.log(diffResult);
 
 	$: removalCount = diffResult.filter((value) => value[0] == diff.DELETE).length;
@@ -25,9 +27,11 @@
 
 	function setDiffResult() {
 		if (originalText || changedText) {
+			isLoading = true;
 			originalTextResult = originalText;
 			changedTextResult = changedText;
 			diffResult = diff(originalText, changedText);
+			isLoading = false;
 		}
 	}
 </script>
@@ -98,9 +102,10 @@
 	</div>
 
 	<button
+		disabled={isLoading}
 		on:click={setDiffResult}
-		class="px-4 py-2 rounded-md bg-emerald-500 hover:bg-emerald-600 transition-colors text-white font-medium"
+		class="px-4 py-2 rounded-md bg-emerald-500 hover:bg-emerald-600 disabled:opacity-75 disabled:hover:bg-emerald-500 disabled:cursor-not-allowed transition-colors text-white font-medium"
 	>
-		Find difference
+		{isLoading ? 'Finding...' : 'Find difference'}
 	</button>
 </div>
