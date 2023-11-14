@@ -3,9 +3,9 @@
 	import { EditorView, basicSetup } from 'codemirror';
 	import { createEventDispatcher, onMount } from 'svelte';
 
-	export let value: string;
-	export let readOnly: boolean = false;
-	export let autoHeight: boolean = false;
+	export let value = '';
+	export let readOnly = false;
+	export let autoHeight = false;
 
 	let editor: HTMLDivElement;
 	let view: EditorView;
