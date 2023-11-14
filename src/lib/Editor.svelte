@@ -5,6 +5,7 @@
 
 	export let value: string;
 	export let readOnly: boolean = false;
+	export let autoHeight: boolean = false;
 
 	let editor: HTMLDivElement;
 	let view: EditorView;
@@ -32,16 +33,18 @@
 		}
 	});
 
-	$: {
-		if (view) {
-			view.dispatch({
-				changes: { from: 0, to: view.state.doc.length, insert: value }
-			});
-		}
+	$: if (view) {
+		view.dispatch({
+			changes: { from: 0, to: view.state.doc.length, insert: value }
+		});
 	}
 </script>
 
-<div class="basis-1/2" bind:this={editor} />
+<div
+	class="basis-1/2"
+	style="--editor-height: {autoHeight ? 'fit-content' : '300px'};"
+	bind:this={editor}
+/>
 
 <style lang="postcss">
 	:global(.cm-editor .cm-activeLine),
@@ -63,7 +66,7 @@
 	}
 
 	:global(.cm-editor) {
-		height: 300px;
+		height: var(--editor-height);
 		border-radius: 0.375rem;
 		border: 1px solid theme(colors.gray.200);
 		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
