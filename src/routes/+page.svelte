@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Editor from '$lib/components/Editor.svelte';
-	import type { Diff } from 'fast-diff';
-	import diff from 'fast-diff';
+	import type { Diff } from 'diff-match-patch';
+	import diff_match_patch from 'diff-match-patch';
 
 	let originalText = '';
 	let changedText = '';
@@ -12,10 +12,12 @@
 
 	let isLoading = false;
 
+	const dmp = new diff_match_patch();
+
 	$: console.log(diffResult);
 
-	$: removalCount = diffResult.filter((value) => value[0] == diff.DELETE).length;
-	$: additionCount = diffResult.filter((value) => value[0] == diff.INSERT).length;
+	$: removalCount = diffResult.filter((value) => value[0] == diff_match_patch.DIFF_DELETE).length;
+	$: additionCount = diffResult.filter((value) => value[0] == diff_match_patch.DIFF_INSERT).length;
 
 	function handleOriginalTextUpdate(e: CustomEvent<string>) {
 		originalText = e.detail;
@@ -28,9 +30,13 @@
 	function setDiffResult() {
 		if (originalText || changedText) {
 			isLoading = true;
+
 			originalTextResult = originalText;
 			changedTextResult = changedText;
-			diffResult = diff(originalText, changedText);
+
+			diffResult = dmp.diff_main(originalText, changedText);
+			dmp.diff_cleanupSemantic(diffResult);
+
 			isLoading = false;
 		}
 	}
