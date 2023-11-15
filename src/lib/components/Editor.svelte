@@ -57,8 +57,8 @@
 	:global(.cm-editor.cm-focused) {
 		outline: none;
 		box-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width))
-			theme(colors.teal.300);
-		border: 1px solid theme(colors.emerald.300);
+			theme(colors.teal.500);
+		border: 1px solid theme(colors.emerald.500);
 	}
 
 	:global(.cm-scroller) {

@@ -12,8 +12,8 @@
 	<slot />
 </div>
 
-<footer class="text-center mx-8 mt-8 py-8 border-t text-sm text-gray-500">
-	<span
+<footer class="text-center mx-8 mt-8 py-8 border-t border-gray-200 text-sm text-gray-500">
+	<span class="font-medium"
 		>&copy; {new Date().getFullYear()} Diffchecker by
 		<a
 			href="https://github.com/qhungg289"
