@@ -68,7 +68,7 @@
 					</div>
 					<span>{removalCount} removal</span>
 				</div>
-				<Editor value={originalTextResult} readOnly autoHeight />
+				<Editor value={originalTextResult} diff={diffResult} readOnly autoHeight />
 			</div>
 			<div class="basis-1/2 space-y-2">
 				<div class="font-medium text-green-600 flex items-center gap-2">
@@ -86,7 +86,7 @@
 					</div>
 					<span>{additionCount} addition</span>
 				</div>
-				<Editor value={changedTextResult} readOnly autoHeight />
+				<Editor value={changedTextResult} diff={diffResult} readOnly autoHeight />
 			</div>
 		</div>
 	{/if}

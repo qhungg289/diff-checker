@@ -1,14 +1,19 @@
 <script lang="ts">
 	import { EditorState } from '@codemirror/state';
+	import { SearchCursor } from '@codemirror/search';
 	import { EditorView, basicSetup } from 'codemirror';
+	import type { Diff } from 'diff-match-patch';
 	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let value = '';
 	export let readOnly = false;
 	export let autoHeight = false;
+	export let diff: Diff[] = [];
 
 	let editor: HTMLDivElement;
 	let view: EditorView;
+
+	// const cursor = new SearchCursor()
 
 	const dispatch = createEventDispatcher();
 
