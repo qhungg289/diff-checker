@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { EditorState } from '@codemirror/state';
-	import { SearchCursor } from '@codemirror/search';
+	import { EditorState, Compartment } from '@codemirror/state';
+	import { Decoration } from '@codemirror/view';
 	import { EditorView, basicSetup } from 'codemirror';
 	import type { Diff } from 'diff-match-patch';
 	import { createEventDispatcher, onMount } from 'svelte';
@@ -13,9 +13,26 @@
 	let editor: HTMLDivElement;
 	let view: EditorView;
 
-	// const cursor = new SearchCursor()
-
 	const dispatch = createEventDispatcher();
+	const highlightCompartment = new Compartment();
+
+	function applyHighlights(state: EditorState, view: EditorView) {
+		const decorations: Decoration[] = [];
+
+		for (const [d, w] of diff) {
+			if (d == -1) {
+				const from = view.state.doc.line(d).from;
+				const to = from + w.length;
+
+				decorations.push(
+					Decoration.mark({
+						attributes: { class: 'deleted-word' },
+						inclusive: true
+					})
+				);
+			}
+		}
+	}
 
 	const updateListener = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
@@ -40,7 +57,11 @@
 
 	$: if (view) {
 		view.dispatch({
-			changes: { from: 0, to: view.state.doc.length, insert: value }
+			changes: {
+				from: 0,
+				to: view.state.doc.length,
+				insert: value
+			}
 		});
 	}
 </script>
