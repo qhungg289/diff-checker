@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { EditorState } from '@codemirror/state';
+	import { EditorState, StateEffect, Range, StateField } from '@codemirror/state';
+	import { Decoration } from '@codemirror/view';
+	import { SearchCursor } from '@codemirror/search';
 	import { EditorView, basicSetup } from 'codemirror';
 	import type { Diff } from 'diff-match-patch';
 	import { createEventDispatcher, onMount } from 'svelte';
@@ -9,7 +11,7 @@
 	export let autoHeight = false;
 	export let diff: Diff[] = [];
 
-	let editor: HTMLDivElement;
+	let editorContainer: HTMLDivElement;
 	let view: EditorView;
 
 	const dispatch = createEventDispatcher();
@@ -20,17 +22,37 @@
 		}
 	});
 
+	const highlightEffect = StateEffect.define<Range<Decoration>[]>();
+	const highlightExtension = StateField.define({
+		create() {
+			return Decoration.none;
+		},
+		update(value, transaction) {
+			value = value.map(transaction.changes);
+
+			for (let effect of transaction.effects) {
+				if (effect.is(highlightEffect)) {
+					value = value.update({ add: effect.value, sort: true });
+				}
+			}
+
+			return value;
+		},
+		provide: (f) => EditorView.decorations.from(f)
+	});
+
 	onMount(() => {
-		if (editor) {
+		if (editorContainer) {
 			view = new EditorView({
 				doc: value,
 				extensions: [
 					basicSetup,
 					updateListener,
 					EditorView.lineWrapping,
-					EditorState.readOnly.of(readOnly)
+					EditorState.readOnly.of(readOnly),
+					highlightExtension
 				],
-				parent: editor
+				parent: editorContainer
 			});
 		}
 	});
@@ -44,12 +66,25 @@
 			}
 		});
 	}
+
+	$: if (diff && view) {
+		const cursor = new SearchCursor(view.state.doc, 'hello');
+		cursor.next();
+		const highlightDecoration = Decoration.mark({
+			attributes: {
+				style: 'background-color: yellow'
+			}
+		});
+		view.dispatch({
+			effects: highlightEffect.of([highlightDecoration.range(cursor.value.from, cursor.value.to)])
+		});
+	}
 </script>
 
 <div
 	class="basis-1/2 bg-white"
 	style="--editor-height: {autoHeight ? 'fit-content' : '300px'};"
-	bind:this={editor}
+	bind:this={editorContainer}
 />
 
 <style lang="postcss">
