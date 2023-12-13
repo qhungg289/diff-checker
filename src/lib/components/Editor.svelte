@@ -3,13 +3,14 @@
 	import { Decoration } from '@codemirror/view';
 	import { SearchCursor } from '@codemirror/search';
 	import { EditorView, basicSetup } from 'codemirror';
-	import { DIFF_INSERT, type Diff } from 'diff-match-patch';
+	import { DIFF_DELETE, DIFF_INSERT, type Diff } from 'diff-match-patch';
 	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let value = '';
 	export let readOnly = false;
 	export let autoHeight = false;
 	export let diff: Diff[] = [];
+	export let diffType: 'INSERT' | 'DELETE' | null = null;
 
 	let editorContainer: HTMLDivElement;
 	let view: EditorView;
@@ -57,37 +58,62 @@
 		}
 	});
 
-	$: if (view) {
-		view.dispatch({
-			changes: {
-				from: 0,
-				to: view.state.doc.length,
-				insert: value
-			}
-		});
-	}
+	$: view?.dispatch({
+		changes: {
+			from: 0,
+			to: view.state.doc.length,
+			insert: value
+		}
+	});
 
 	$: if (diff.length > 0 && view) {
-		let from = 0;
-		const highlightDecoration = Decoration.mark({
-			attributes: {
-				class: 'bg-green-200'
-			}
-		});
-		const diffInsert = diff.filter((d) => d[0] == DIFF_INSERT).map((d) => d[1]);
+		if (diffType == 'INSERT') {
+			let from = 0;
+			const diffInsert = diff.filter((d) => d[0] == DIFF_INSERT).map((d) => d[1]);
 
-		diffInsert?.forEach((d) => {
-			const cursor = new SearchCursor(view.state.doc, d, from);
-			cursor.next();
-			if (cursor.value.to) {
-				from = cursor.value.to;
-				view.dispatch({
-					effects: highlightEffect.of([
-						highlightDecoration.range(cursor.value.from, cursor.value.to)
-					])
-				});
-			}
-		});
+			const highlightDecoration = Decoration.mark({
+				attributes: {
+					class: 'bg-green-200'
+				}
+			});
+
+			diffInsert?.forEach((d) => {
+				const cursor = new SearchCursor(view.state.doc, d, from);
+				cursor.next();
+				if (cursor.value.to) {
+					from = cursor.value.to;
+					view.dispatch({
+						effects: highlightEffect.of([
+							highlightDecoration.range(cursor.value.from, cursor.value.to)
+						])
+					});
+				}
+			});
+		}
+
+		if (diffType == 'DELETE') {
+			let from = 0;
+			const diffDelete = diff.filter((d) => d[0] == DIFF_DELETE).map((d) => d[1]);
+
+			const highlightDecoration = Decoration.mark({
+				attributes: {
+					class: 'bg-red-200'
+				}
+			});
+
+			diffDelete?.forEach((d) => {
+				const cursor = new SearchCursor(view.state.doc, d, from);
+				cursor.next();
+				if (cursor.value.to) {
+					from = cursor.value.to;
+					view.dispatch({
+						effects: highlightEffect.of([
+							highlightDecoration.range(cursor.value.from, cursor.value.to)
+						])
+					});
+				}
+			});
+		}
 	}
 </script>
 

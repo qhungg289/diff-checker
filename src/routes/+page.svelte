@@ -14,8 +14,6 @@
 
 	const dmp = new diff_match_patch();
 
-	$: console.log(diffResult);
-
 	$: removalCount = diffResult.filter((value) => value[0] == diff_match_patch.DIFF_DELETE).length;
 	$: additionCount = diffResult.filter((value) => value[0] == diff_match_patch.DIFF_INSERT).length;
 
@@ -68,7 +66,13 @@
 					</div>
 					<span>{removalCount} removal</span>
 				</div>
-				<Editor value={originalTextResult} diff={diffResult} readOnly autoHeight />
+				<Editor
+					value={originalTextResult}
+					diff={diffResult}
+					readOnly
+					autoHeight
+					diffType="DELETE"
+				/>
 			</div>
 			<div class="basis-1/2 space-y-2">
 				<div class="font-medium text-green-600 flex items-center gap-2">
@@ -86,7 +90,7 @@
 					</div>
 					<span>{additionCount} addition</span>
 				</div>
-				<Editor value={changedTextResult} diff={diffResult} readOnly autoHeight />
+				<Editor value={changedTextResult} diff={diffResult} readOnly autoHeight diffType="INSERT" />
 			</div>
 		</div>
 	{/if}
