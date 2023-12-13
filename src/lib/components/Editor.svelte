@@ -3,7 +3,7 @@
 	import { Decoration } from '@codemirror/view';
 	import { SearchCursor } from '@codemirror/search';
 	import { EditorView, basicSetup } from 'codemirror';
-	import type { Diff } from 'diff-match-patch';
+	import { DIFF_INSERT, type Diff } from 'diff-match-patch';
 	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let value = '';
@@ -67,16 +67,26 @@
 		});
 	}
 
-	$: if (diff && view) {
-		const cursor = new SearchCursor(view.state.doc, 'hello');
-		cursor.next();
+	$: if (diff.length > 0 && view) {
+		let from = 0;
 		const highlightDecoration = Decoration.mark({
 			attributes: {
-				style: 'background-color: yellow'
+				class: 'bg-green-200'
 			}
 		});
-		view.dispatch({
-			effects: highlightEffect.of([highlightDecoration.range(cursor.value.from, cursor.value.to)])
+		const diffInsert = diff.filter((d) => d[0] == DIFF_INSERT).map((d) => d[1]);
+
+		diffInsert?.forEach((d) => {
+			const cursor = new SearchCursor(view.state.doc, d, from);
+			cursor.next();
+			if (cursor.value.to) {
+				from = cursor.value.to;
+				view.dispatch({
+					effects: highlightEffect.of([
+						highlightDecoration.range(cursor.value.from, cursor.value.to)
+					])
+				});
+			}
 		});
 	}
 </script>
