@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { EditorState, Compartment } from '@codemirror/state';
-	import { Decoration } from '@codemirror/view';
+	import { EditorState } from '@codemirror/state';
 	import { EditorView, basicSetup } from 'codemirror';
 	import type { Diff } from 'diff-match-patch';
 	import { createEventDispatcher, onMount } from 'svelte';
@@ -14,25 +13,6 @@
 	let view: EditorView;
 
 	const dispatch = createEventDispatcher();
-	const highlightCompartment = new Compartment();
-
-	function applyHighlights(state: EditorState, view: EditorView) {
-		const decorations: Decoration[] = [];
-
-		for (const [d, w] of diff) {
-			if (d == -1) {
-				const from = view.state.doc.line(d).from;
-				const to = from + w.length;
-
-				decorations.push(
-					Decoration.mark({
-						attributes: { class: 'deleted-word' },
-						inclusive: true
-					})
-				);
-			}
-		}
-	}
 
 	const updateListener = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
